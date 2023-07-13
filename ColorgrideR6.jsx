@@ -43,10 +43,10 @@ function drawSquare(doc, color, currentX, currentY, size) {
 }
 
 function addHueSaturation(doc, start, end, isRow) {
-    for (var i = start; i < end; i++) {
+    for (var i = start; i <= end; i++) {
         // Skip the 7th row or column
         if (i === 7) continue;
-        
+
         var shapeRef;
         if (isRow) {
             shapeRef = [
@@ -116,9 +116,7 @@ function main() {
     var rowColumnFlags = [true, false];
     for (var index = 0; index < rowColumnFlags.length; index++) {
         var isRow = rowColumnFlags[index];
-        for (var startEndIndex = 0; startEndIndex < 2; startEndIndex++) {
-            addHueSaturation(doc, startEndIndex * 8, (startEndIndex + 1) * 7, isRow);
-        }
+        addHueSaturation(doc, 0, 14, isRow);
     }
     
     var letters = "ABCDEFGHIJKLMNOP".split('');
