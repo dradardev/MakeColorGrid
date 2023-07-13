@@ -47,17 +47,14 @@ function groupLayers(doc, layers, name) {
 function main() {
     var colorSpace = Number(prompt("Select Color Space (Enter number):\n1. RGB (sRGB IEC61966-2.1)\n2. RGB (Adobe RGB (1998))\n3. CMYK (Coated GRACoL 2006 (ISO 12647-2:2004))"));
 
-    var docMode;
     var color;
 
     if (colorSpace === 1 || colorSpace === 2) { // RGB
-        docMode = NewDocumentMode.RGB;
         color = new RGBColor();
         color.red = Number(prompt("Enter Red Value:"));
         color.green = Number(prompt("Enter Green Value:"));
         color.blue = Number(prompt("Enter Blue Value:"));
     } else if (colorSpace === 3) { // CMYK
-        docMode = NewDocumentMode.CMYK;
         color = new CMYKColor();
         color.cyan = Number(prompt("Enter Cyan Value:"));
         color.magenta = Number(prompt("Enter Magenta Value:"));
@@ -68,7 +65,10 @@ function main() {
         return;
     }
 
-    var doc = app.documents.add(7140, 7140, 300, "Color Variations", docMode, DocumentFill.TRANSPARENT);
+    alert("Please select the color profile in the New Document dialog based on your previous selection (sRGB IEC61966-2.1 or Adobe RGB (1998) for RGB, Coated GRACoL 2006 (ISO 12647-2:2004) for CMYK).");
+
+    var doc = app.documents.add(7140, 7140, 300, "Color Variations", NewDocumentMode.RGB, DocumentFill.TRANSPARENT);
+
     var boxSize = 450; // in pixels
     var gapSize = 20; // in pixels
     var posX = 0;
@@ -94,8 +94,10 @@ function main() {
     var textLayers = [];
 
     for (var i = 0; i < 15; i++) {
+        if(i < 15) {
+            textLayers.push(addTextLayer(doc, letters[i], posY + 235, 7083.32));
+        }
         textLayers.push(addTextLayer(doc, (i+1).toString(), 7085.56, posY + 235));
-        textLayers.push(addTextLayer(doc, letters[i], posY + 235, 7083.32));
         posY += boxSize + gapSize;
     }
     
