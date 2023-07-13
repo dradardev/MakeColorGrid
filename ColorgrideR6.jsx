@@ -42,14 +42,23 @@ function drawSquare(doc, color, currentX, currentY, size) {
     doc.selection.deselect();
 }
 
-// Adds a hue/saturation adjustment to a row or column
 function addHueSaturation(doc, start, end, isRow) {
     for (var i = start; i < end; i++) {
         var shapeRef;
         if (isRow) {
-            shapeRef = [[0, i * BOX_SIZE], [DOCUMENT_SIZE, i * BOX_SIZE], [DOCUMENT_SIZE, (i * BOX_SIZE) + BOX_SIZE], [0, (i * BOX_SIZE) + BOX_SIZE]];
+            shapeRef = [
+                [0, i * (BOX_SIZE + GAP_SIZE)], 
+                [DOCUMENT_SIZE, i * (BOX_SIZE + GAP_SIZE)], 
+                [DOCUMENT_SIZE, (i * (BOX_SIZE + GAP_SIZE)) + BOX_SIZE], 
+                [0, (i * (BOX_SIZE + GAP_SIZE)) + BOX_SIZE]
+            ];
         } else {
-            shapeRef = [[i * BOX_SIZE, 0], [i * BOX_SIZE, DOCUMENT_SIZE], [(i * BOX_SIZE) + BOX_SIZE, DOCUMENT_SIZE], [(i * BOX_SIZE) + BOX_SIZE, 0]];
+            shapeRef = [
+                [i * (BOX_SIZE + GAP_SIZE), 0], 
+                [i * (BOX_SIZE + GAP_SIZE), DOCUMENT_SIZE], 
+                [(i * (BOX_SIZE + GAP_SIZE)) + BOX_SIZE, DOCUMENT_SIZE], 
+                [(i * (BOX_SIZE + GAP_SIZE)) + BOX_SIZE, 0]
+            ];
         }
 
         doc.selection.select(shapeRef);
@@ -57,6 +66,7 @@ function addHueSaturation(doc, start, end, isRow) {
         doc.selection.deselect();
     }
 }
+
 
 // Adds a text layer at the given position
 function addTextLayer(doc, text, currentX, currentY) {
