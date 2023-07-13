@@ -44,6 +44,9 @@ function drawSquare(doc, color, currentX, currentY, size) {
 
 function addHueSaturation(doc, start, end, isRow) {
     for (var i = start; i < end; i++) {
+        // Skip the 7th row or column
+        if (i === 7) continue;
+        
         var shapeRef;
         if (isRow) {
             shapeRef = [
