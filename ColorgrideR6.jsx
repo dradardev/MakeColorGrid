@@ -1,10 +1,8 @@
-#target photoshop
-
 // Constants
-const DOCUMENT_SIZE = 7140;
-const GRID_SIZE = 15;
-const BOX_SIZE = 450;
-const GAP_SIZE = 20;
+var DOCUMENT_SIZE = 7140;
+var GRID_SIZE = 15;
+var BOX_SIZE = 450;
+var GAP_SIZE = 20;
 
 // Gets user input for CMYK values
 function getUserColor() {
@@ -66,7 +64,7 @@ function addTextLayer(doc, text, currentX, currentY) {
     textLayer.kind = LayerKind.TEXT;
     var textItem = textLayer.textItem;
     textItem.contents = text;
-    textItem.position = [currentX, currentY];
+    textItem.position = [new UnitValue(currentX, 'px'), new UnitValue(currentY, 'px')];
     return textLayer;
 }
 
