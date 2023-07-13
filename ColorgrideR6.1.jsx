@@ -21,7 +21,7 @@ function addHueSaturation(doc, start, end, isRow) {
             doc.selection.select([[i * 470, 0], [i * 470, 7140], [(i * 470) + 450, 7140], [(i * 470) + 450, 0]]);
         }
 
-        app.doAction("AddAdjustmentLayer", "DevinActions");
+        app.doAction("AddAdjustmentLayer", "MakeColorGrid");
 
         doc.selection.deselect();
     }
@@ -102,6 +102,8 @@ function main() {
     }
     
     groupLayers(doc, textLayers, "Text Layers");
+
+    app.doAction("SetValues", "MakeColorGrid");
 }
 
 main();
