@@ -1,11 +1,42 @@
 #target photoshop
 
-function drawSquare(doc, color, posX, posY, size) {
+// Constants
+const DOCUMENT_SIZE = 7140;
+const GRID_SIZE = 15;
+const BOX_SIZE = 450;
+const GAP_SIZE = 20;
+
+// Gets user input for CMYK values
+function getUserColor() {
+    var color = new CMYKColor();
+    
+    color.cyan = getCMYKValue("Cyan");
+    color.magenta = getCMYKValue("Magenta");
+    color.yellow = getCMYKValue("Yellow");
+    color.black = getCMYKValue("Black");
+
+    return color;
+}
+
+function getCMYKValue(colorComponent) {
+    var value;
+    do {
+        value = Number(prompt(`Enter ${colorComponent} Value:`));
+        if (isNaN(value) || value < 0 || value > 100) {
+            alert(`Please enter a valid ${colorComponent} value (0-100).`);
+        }
+    } while (isNaN(value) || value < 0 || value > 100);
+
+    return value;
+}
+
+// Draws a square at the given position with the given size and color
+function drawSquare(doc, color, currentX, currentY, size) {
     var shapeRef = [
-        [posX, posY], 
-        [posX + size, posY], 
-        [posX + size, posY + size], 
-        [posX, posY + size]
+        [currentX, currentY], 
+        [currentX + size, currentY], 
+        [currentX + size, currentY + size], 
+        [currentX, currentY + size]
     ];
 
     doc.selection.select(shapeRef);
@@ -13,28 +44,33 @@ function drawSquare(doc, color, posX, posY, size) {
     doc.selection.deselect();
 }
 
+// Adds a hue/saturation adjustment to a row or column
 function addHueSaturation(doc, start, end, isRow) {
     for (var i = start; i < end; i++) {
+        var shapeRef;
         if (isRow) {
-            doc.selection.select([[0, i * 470], [7140, i * 470], [7140, (i * 470) + 450], [0, (i * 470) + 450]]);
+            shapeRef = [[0, i * BOX_SIZE], [DOCUMENT_SIZE, i * BOX_SIZE], [DOCUMENT_SIZE, (i * BOX_SIZE) + BOX_SIZE], [0, (i * BOX_SIZE) + BOX_SIZE]];
         } else {
-            doc.selection.select([[i * 470, 0], [i * 470, 7140], [(i * 470) + 450, 7140], [(i * 470) + 450, 0]]);
+            shapeRef = [[i * BOX_SIZE, 0], [i * BOX_SIZE, DOCUMENT_SIZE], [(i * BOX_SIZE) + BOX_SIZE, DOCUMENT_SIZE], [(i * BOX_SIZE) + BOX_SIZE, 0]];
         }
 
+        doc.selection.select(shapeRef);
         app.doAction("AddAdjustmentLayer", "MakeColorGrid");
         doc.selection.deselect();
     }
 }
 
-function addTextLayer(doc, text, posX, posY) {
+// Adds a text layer at the given position
+function addTextLayer(doc, text, currentX, currentY) {
     var textLayer = doc.artLayers.add();
     textLayer.kind = LayerKind.TEXT;
     var textItem = textLayer.textItem;
     textItem.contents = text;
-    textItem.position = [posX, posY];
+    textItem.position = [currentX, currentY];
     return textLayer;
 }
 
+// Groups the given layers
 function groupLayers(doc, layers, name) {
     var group = doc.layerSets.add();
     group.name = name;
@@ -44,46 +80,42 @@ function groupLayers(doc, layers, name) {
 }
 
 function main() {
-    var doc = app.documents.add(7140, 7140, 300, "Color Variations", NewDocumentMode.CMYK, DocumentFill.TRANSPARENT);
-    var boxSize = 450; // in pixels
-    var gapSize = 20; // in pixels
-    var posX = 0;
-    var posY = 0;
+    var doc = app.documents.add(DOCUMENT_SIZE, DOCUMENT_SIZE, 300, "Color Variations", NewDocumentMode.CMYK, DocumentFill.TRANSPARENT);
+    var currentX = 0;
+    var currentY = 0;
 
-    var startColor = new CMYKColor();
-    startColor.cyan = Number(prompt("Enter Cyan Value:"));
-    startColor.magenta = Number(prompt("Enter Magenta Value:"));
-    startColor.yellow = Number(prompt("Enter Yellow Value:"));
-    startColor.black = Number(prompt("Enter Black Value:"));
+    var startColor = getUserColor();
+    var color = new CMYKColor();
+    color.cyan = startColor.cyan;
+    color.magenta = startColor.magenta;
+    color.yellow = startColor.yellow;
+    color.black = startColor.black;
 
-    for (var i = 0; i < 15; i++) {
-        for (var j = 0; j < 15; j++) {
-            var color = new CMYKColor();
-            color.cyan = startColor.cyan;
-            color.magenta = startColor.magenta;
-            color.yellow = startColor.yellow;
-            color.black = startColor.black;
-            drawSquare(doc, color, posX, posY, boxSize);
-            posX += boxSize + gapSize;
+    for (var row = 0; row < GRID_SIZE; row++) {
+        for (var column = 0; column < GRID_SIZE; column++) {
+            drawSquare(doc, color, currentX, currentY, BOX_SIZE);
+            currentX += BOX_SIZE + GAP_SIZE;
         }
 
-        posY += boxSize + gapSize;
-        posX = 0;
+        currentY += BOX_SIZE + GAP_SIZE;
+        currentX = 0;
     }
 
-    addHueSaturation(doc, 0, 7, true);
-    addHueSaturation(doc, 8, 15, true);
-    addHueSaturation(doc, 0, 7, false);
-    addHueSaturation(doc, 8, 15, false);
+    // Apply Hue/Saturation
+    for (let isRow of [true, false]) {
+        for (let startEnd of [[0, 7], [8, 15]]) {
+            addHueSaturation(doc, startEnd[0], startEnd[1], isRow);
+        }
+    }
     
     var letters = "ABCDEFGHIJKLMNOP".split('');
-    posY = 0;
+    currentY = 0;
     var textLayers = [];
 
-    for (var i = 0; i < 15; i++) {
-        textLayers.push(addTextLayer(doc, (i+1).toString(), 7085.56, posY + 235));
-        textLayers.push(addTextLayer(doc, letters[i], posY + 235, 7083.32));
-        posY += boxSize + gapSize;
+    for (var row = 0; row < GRID_SIZE; row++) {
+        textLayers.push(addTextLayer(doc, (row+1).toString(), DOCUMENT_SIZE - 54.44, currentY + BOX_SIZE / 2));
+        textLayers.push(addTextLayer(doc, letters[row], currentY + BOX_SIZE / 2, DOCUMENT_SIZE - 56.68));
+        currentY += BOX_SIZE + GAP_SIZE;
     }
     
     groupLayers(doc, textLayers, "Text Layers");
