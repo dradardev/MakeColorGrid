@@ -14,6 +14,27 @@ function getUserColor() {
     color.black = getCMYKValue("Black");
 
     return color;
+
+    // var colorSpace = Number(prompt("Select Color Space (Enter number):\n1. RGB (sRGB IEC61966-2.1)\n2. RGB (Adobe RGB (1998))\n3. CMYK (Coated GRACoL 2006 (ISO 12647-2:2004))"));
+
+
+    // if (colorSpace === 1 || colorSpace === 2) { // RGB
+    //     color = new RGBColor();
+    //     color.red = Number(prompt("Enter Red Value:"));
+    //     color.green = Number(prompt("Enter Green Value:"));
+    //     color.blue = Number(prompt("Enter Blue Value:"));
+    // } else if (colorSpace === 3) { // CMYK
+    //     color = new CMYKColor();
+    //     color.cyan = Number(prompt("Enter Cyan Value:"));
+    //     color.magenta = Number(prompt("Enter Magenta Value:"));
+    //     color.yellow = Number(prompt("Enter Yellow Value:"));
+    //     color.black = Number(prompt("Enter Black Value:"));
+    // } else {
+    //     alert("Invalid color space selected");
+    //     return;
+    // }
+
+    // alert("Please select the color profile in the New Document dialog based on your previous selection (sRGB IEC61966-2.1 or Adobe RGB (1998) for RGB, Coated GRACoL 2006 (ISO 12647-2:2004) for CMYK).");
 }
 
 function getCMYKValue(colorComponent) {
