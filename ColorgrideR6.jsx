@@ -102,9 +102,11 @@ function main() {
     }
 
     // Apply Hue/Saturation
-    for (let isRow of [true, false]) {
-        for (let startEnd of [[0, 7], [8, 15]]) {
-            addHueSaturation(doc, startEnd[0], startEnd[1], isRow);
+    var rowColumnFlags = [true, false];
+    for (var index = 0; index < rowColumnFlags.length; index++) {
+        var isRow = rowColumnFlags[index];
+        for (var startEndIndex = 0; startEndIndex < 2; startEndIndex++) {
+            addHueSaturation(doc, startEndIndex * 8, (startEndIndex + 1) * 7, isRow);
         }
     }
     
