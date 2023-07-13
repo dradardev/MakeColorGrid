@@ -21,9 +21,9 @@ function getUserColor() {
 function getCMYKValue(colorComponent) {
     var value;
     do {
-        value = Number(prompt(`Enter ${colorComponent} Value:`));
+        value = Number(prompt("Enter " + colorComponent + " Value:"));
         if (isNaN(value) || value < 0 || value > 100) {
-            alert(`Please enter a valid ${colorComponent} value (0-100).`);
+            alert("Please enter a valid " + colorComponent + " value (0-100).");
         }
     } while (isNaN(value) || value < 0 || value > 100);
 
