@@ -1,9 +1,22 @@
+/**
+ * @fileoverview
+ * This script will create a 15 x 15 grid of 1.5inx1.5in colors for color exploration.
+ * The user will be prompted to create a document via Photoshops new document dialog box,
+ * The script will then read the documents color space and prompt the user for color values 
+ * based on the color space (RGB or CMYK)
+ * @version 1.0.1
+ * @company Calico Wallpaper
+ * @author Devin Doppler
+ * @contributors Alexander Moss, ChatGPT
+ */
+
 // Constants
 var DOCUMENT_SIZE = 7140;
 var GRID_SIZE = 15;
 var BOX_SIZE = 450;
 var GAP_SIZE = 20;
 
+//Define Color and Color Space
 function getCMYKUserColor() {
     var color = new CMYKColor();
     
@@ -155,7 +168,28 @@ function main() {
     groupLayers(doc, textLayers, "Text Layers");
 
     // Execute the SetValues action
+    // User can change the values with in the PS Action
     app.doAction("SetValues", "MakeColorGrid");
+
+    //Auto Save Function
+    var saveFolder = Folder.selectDialog("Select a folder to save your files");
+    if (saveFolder) {
+        var fileName = doc.name.replace(/\.[^\.]+$/, ''); // Strip the extension of the document name
+        
+        // Save as PSD
+        var saveOptions = new PhotoshopSaveOptions();
+        var psdFile = new File(saveFolder.fsName + "/" + fileName + ".psd");
+        doc.saveAs(psdFile, saveOptions, true, Extension.LOWERCASE);
+
+        // Flatten the document
+        doc.flatten();
+
+        // Save as TIFF
+        var tiffOptions = new TiffSaveOptions();
+        tiffOptions.imageCompression = TIFFEncoding.TIFFLZW; // Use LZW compression
+        var tiffFile = new File(saveFolder.fsName + "/" + fileName + ".tif");
+        doc.saveAs(tiffFile, tiffOptions, true, Extension.LOWERCASE);
+    }
 }
 
 main();
