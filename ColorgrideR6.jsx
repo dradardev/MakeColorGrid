@@ -174,6 +174,14 @@ function main() {
     //Auto Save Function
     var saveFolder = Folder.selectDialog("Select a folder to save your files");
     if (saveFolder) {
+        // Create a custom dialog for TIFF compression preference
+        var dialog = new Window('dialog', 'Compression');
+        dialog.add('statictext', undefined, 'Save with LZW compression?');
+        var yesButton = dialog.add('button', undefined, 'Yes', {name: 'ok'});
+        var noButton = dialog.add('button', undefined, 'No', {name: 'cancel'});
+
+        var result = dialog.show();
+
         var fileName = doc.name.replace(/\.[^\.]+$/, ''); // Strip the extension of the document name
         
         // Save as PSD
@@ -182,14 +190,16 @@ function main() {
         doc.saveAs(psdFile, saveOptions, true, Extension.LOWERCASE);
 
         // Flatten the document
+
         doc.flatten();
 
         // Save as TIFF
         var tiffOptions = new TiffSaveOptions();
-        tiffOptions.imageCompression = TIFFEncoding.TIFFLZW; // Use LZW compression
+        tiffOptions.imageCompression = result === 1 ? TIFFEncoding.TIFFLZW : TIFFEncoding.NONE; // Use LZW compression if user chose 'Yes', otherwise no compression
         var tiffFile = new File(saveFolder.fsName + "/" + fileName + ".tif");
         doc.saveAs(tiffFile, tiffOptions, true, Extension.LOWERCASE);
     }
+    
 }
 
 main();
