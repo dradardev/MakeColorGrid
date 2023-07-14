@@ -4,8 +4,7 @@ var GRID_SIZE = 15;
 var BOX_SIZE = 450;
 var GAP_SIZE = 20;
 
-// Gets user input for CMYK values
-function getUserColor() {
+function getCMYKUserColor() {
     var color = new CMYKColor();
     
     color.cyan = getCMYKValue("Cyan");
@@ -14,27 +13,16 @@ function getUserColor() {
     color.black = getCMYKValue("Black");
 
     return color;
+}
 
-    // var colorSpace = Number(prompt("Select Color Space (Enter number):\n1. RGB (sRGB IEC61966-2.1)\n2. RGB (Adobe RGB (1998))\n3. CMYK (Coated GRACoL 2006 (ISO 12647-2:2004))"));
+function getRGBUserColor() {
+    var color = new RGBColor();
 
+    color.red = getRGBValue("Red");
+    color.green = getRGBValue("Green");
+    color.blue = getRGBValue("Blue");
 
-    // if (colorSpace === 1 || colorSpace === 2) { // RGB
-    //     color = new RGBColor();
-    //     color.red = Number(prompt("Enter Red Value:"));
-    //     color.green = Number(prompt("Enter Green Value:"));
-    //     color.blue = Number(prompt("Enter Blue Value:"));
-    // } else if (colorSpace === 3) { // CMYK
-    //     color = new CMYKColor();
-    //     color.cyan = Number(prompt("Enter Cyan Value:"));
-    //     color.magenta = Number(prompt("Enter Magenta Value:"));
-    //     color.yellow = Number(prompt("Enter Yellow Value:"));
-    //     color.black = Number(prompt("Enter Black Value:"));
-    // } else {
-    //     alert("Invalid color space selected");
-    //     return;
-    // }
-
-    // alert("Please select the color profile in the New Document dialog based on your previous selection (sRGB IEC61966-2.1 or Adobe RGB (1998) for RGB, Coated GRACoL 2006 (ISO 12647-2:2004) for CMYK).");
+    return color;
 }
 
 function getCMYKValue(colorComponent) {
@@ -45,6 +33,18 @@ function getCMYKValue(colorComponent) {
             alert("Please enter a valid " + colorComponent + " value (0-100).");
         }
     } while (isNaN(value) || value < 0 || value > 100);
+
+    return value;
+}
+
+function getRGBValue(colorComponent) {
+    var value;
+    do {
+        value = Number(prompt("Enter " + colorComponent + " Value:"));
+        if (isNaN(value) || value < 0 || value > 255) {
+            alert("Please enter a valid " + colorComponent + " value (0-255).");
+        }
+    } while (isNaN(value) || value < 0 || value > 255);
 
     return value;
 }
@@ -91,7 +91,6 @@ function addHueSaturation(doc, start, end, isRow) {
     }
 }
 
-
 // Adds a text layer at the given position
 function addTextLayer(doc, text, currentX, currentY) {
     var textLayer = doc.artLayers.add();
@@ -115,17 +114,20 @@ function main() {
     var doc = app.documents.add(DOCUMENT_SIZE, DOCUMENT_SIZE, 300, "Color Variations", NewDocumentMode.CMYK, DocumentFill.TRANSPARENT);
     var currentX = 0;
     var currentY = 0;
-
-    var startColor = getUserColor();
-    var color = new CMYKColor();
-    color.cyan = startColor.cyan;
-    color.magenta = startColor.magenta;
-    color.yellow = startColor.yellow;
-    color.black = startColor.black;
+    
+    var startColor;
+    if (doc.mode === DocumentMode.CMYK) {
+        startColor = getCMYKUserColor();
+    } else if (doc.mode === DocumentMode.RGB) {
+        startColor = getRGBUserColor();
+    } else {
+        alert("Unsupported color mode: " + doc.mode);
+        return;
+    }
 
     for (var row = 0; row < GRID_SIZE; row++) {
         for (var column = 0; column < GRID_SIZE; column++) {
-            drawSquare(doc, color, currentX, currentY, BOX_SIZE);
+            drawSquare(doc, startColor, currentX, currentY, BOX_SIZE);
             currentX += BOX_SIZE + GAP_SIZE;
         }
 
